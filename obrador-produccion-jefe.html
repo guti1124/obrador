@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Obrador — Orden de Producción</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══ TOKENS ══ */
+:root {
+  --ink:     #18150f;
+  --ink2:    #4a4030;
+  --ink3:    #8a7d68;
+  --paper:   #fdf9f3;
+  --paper2:  #f5ede0;
+  --paper3:  #ede0cc;
+  --amber:   #b8680e;
+  --amber2:  #e8890a;
+  --amber-l: #fdf0d8;
+  --amber-b: #ddb060;
+  --red:     #a83220;
+  --red-l:   #fdf0ec;
+  --red-b:   #d08060;
+  --green:   #2a6640;
+  --green-l: #ecf5ee;
+  --green-b: #80c090;
+  --blue:    #1a4e80;
+  --blue-l:  #eaf0f8;
+  --blue-b:  #80a8d8;
+  --rule:    #ddd0bb;
+  --r:       10px;
+  --r-lg:    18px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* ══ LAYOUT ══ */
+.page { max-width: 900px; margin: 0 auto; padding: 28px 18px 60px; }
+
+/* ══ MASTHEAD ══ */
+.masthead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.masthead-brand { display: flex; align-items: center; gap: 14px; }
+.masthead-icon {
+  width: 56px; height: 56px;
+  background: var(--amber);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.masthead-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--ink);
+  letter-spacing: -.5px;
+  line-height: 1;
+}
+.masthead-sub {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--ink3);
+  margin-top: 4px;
+}
+.masthead-meta {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+.meta-fecha {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.meta-hora {
+  font-size: 12px;
+  color: var(--ink3);
+  font-variant-numeric: tabular-nums;
+}
+.meta-puntos {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.punto-chip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.chip-ok   { background: var(--green-l); border-color: var(--green-b); color: var(--green); }
+.chip-pend { background: var(--amber-l); border-color: var(--amber-b); color: var(--amber); }
+
+/* ══ STATS ROW ══ */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.stat-box {
+  background: var(--paper2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: 14px 16px;
+}
+.stat-box .s-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--ink3);
+}
+.stat-box .s-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 4px;
+}
+.stat-box .s-val.warn { color: var(--red); }
+.stat-box .s-val.hi   { color: var(--amber); }
+
+/* ══ CONFIG BANNER ══ */
+.cfg-banner {
+  background: var(--blue-l);
+  border: 1px solid var(--blue-b);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.cfg-banner .cfg-icon { font-size: 22px; flex-shrink: 0; }
+.cfg-banner .cfg-body { flex: 1; }
+.cfg-banner .cfg-title { font-weight: 700; color: var(--blue); font-size: 14px; }
+.cfg-banner .cfg-desc  { font-size: 12px; color: var(--ink2); margin-top: 3px; line-height: 1.6; }
+.cfg-form  { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; margin-top: 12px; }
+.cfg-label { font-size: 11px; font-weight: 600; color: var(--ink2); margin-bottom: 4px; display: block; }
+.cfg-input {
+  background: white;
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  width: 340px;
+  max-width: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: border-color .2s;
+}
+.cfg-input:focus { border-color: var(--blue); }
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-amber {
+  background: var(--amber);
+  color: white;
+  box-shadow: 0 2px 10px rgba(184,104,14,.25);
+}
+.btn-amber:hover { background: #a35c0c; transform: translateY(-1px); }
+.btn-amber:active { transform: translateY(0); }
+.btn-ghost {
+  background: transparent;
+  border: 1.5px solid var(--rule);
+  color: var(--ink2);
+}
+.btn-ghost:hover { border-color: var(--ink2); }
+.btn-green { background: var(--green-l); border: 1px solid var(--green-b); color: var(--green); }
+.btn-red   { background: var(--red-l);   border: 1px solid var(--red-b);   color: var(--red); }
+
+/* ══ ALERT ══ */
+.alert-ok {
+  background: var(--green-l);
+  border: 1px solid var(--green-b);
+  border-radius: var(--r);
+  padding: 12px 18px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--green);
+  font-weight: 600;
+  font-size: 13px;
+}
+.alert-warn {
+  background: var(--amber-l);
+  border: 1px solid var(--amber-b);
+  border-radius: var(--r);
+  padding: 12px 18px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--amber);
+  font-weight: 600;
+  font-size: 13px;
+}
+.alert-err {
+  background: var(--red-l);
+  border: 1px solid var(--red-b);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.alert-err .ae-icon { font-size: 20px; flex-shrink: 0; }
+.alert-err .ae-title { font-weight: 700; color: var(--red); font-size: 13px; }
+.alert-err .ae-desc  { font-size: 12px; color: var(--ink2); margin-top: 3px; line-height: 1.6; }
+.alert-hidden { display: none; }
+
+/* ══ TOOLBAR ══ */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.toolbar-right { display: flex; gap: 8px; flex-wrap: wrap; }
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.section-sub { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+
+.search {
+  background: white;
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  width: 180px;
+  transition: border-color .2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.search:focus { border-color: var(--amber); }
+.search::placeholder { color: var(--ink3); }
+
+/* ══ FILTER PILLS ══ */
+.filter-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.f-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--rule);
+  background: white;
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all .15s;
+}
+.f-pill:hover { border-color: var(--amber); color: var(--amber); }
+.f-pill.active { background: var(--amber); border-color: var(--amber); color: white; }
+
+/* ══ TABLE ══ */
+.card {
+  background: white;
+  border: 1.5px solid var(--rule);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 20px rgba(0,0,0,.06);
+}
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 460px; }
+thead th {
+  background: var(--paper2);
+  border-bottom: 1.5px solid var(--rule);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  white-space: nowrap;
+}
+th.c { text-align: center; }
+tbody tr { border-bottom: 1px solid var(--rule); transition: background .1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--paper); }
+tbody tr.prio  { background: #fff9f0; }
+tbody tr.zero  { opacity: .45; }
+tbody tr.done-row { background: var(--green-l); }
+td { padding: 9px 14px; vertical-align: middle; font-size: 13px; }
+.td-code { font-size: 11px; color: var(--ink3); text-align: center; font-variant-numeric: tabular-nums; }
+.td-name { font-weight: 600; color: var(--ink); }
+.td-sub  { font-size: 11px; color: var(--ink3); margin-top: 1px; font-weight: 400; }
+.td-c    { text-align: center; font-variant-numeric: tabular-nums; }
+
+/* PROD NUMBER */
+.prod-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 46px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.prod-big  { background: var(--red-l); color: var(--red); }
+.prod-med  { background: var(--amber-l); color: var(--amber); }
+.prod-low  { background: var(--paper2); color: var(--ink2); }
+.prod-zero { background: var(--green-l); color: var(--green); font-size: 13px; }
+
+/* PUNTO BREAKDOWN */
+.breakdown {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 3px;
+}
+.bk-chip {
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-weight: 600;
+  border: 1px solid;
+}
+.bk-chip.has { background: var(--red-l); border-color: var(--red-b); color: var(--red); }
+.bk-chip.ok  { background: var(--green-l); border-color: var(--green-b); color: var(--green); }
+.bk-chip.na  { background: var(--paper2); border-color: var(--rule); color: var(--ink3); }
+
+/* CHECKBOX */
+.check-wrap { display: flex; justify-content: center; }
+.prod-check {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--rule);
+  cursor: pointer;
+  appearance: none;
+  background: white;
+  transition: all .15s;
+  flex-shrink: 0;
+  position: relative;
+}
+.prod-check:checked {
+  background: var(--green);
+  border-color: var(--green);
+}
+.prod-check:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ══ PRINT ══ */
+.print-btn {
+  background: var(--ink);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.print-btn:hover { background: var(--ink2); }
+
+/* ══ LOADING ══ */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--rule);
+  border-top-color: var(--amber);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 14px; color: var(--ink3); }
+
+/* ══ EMPTY ══ */
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+}
+.empty-icon { font-size: 48px; margin-bottom: 14px; }
+.empty-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.empty-desc { font-size: 13px; color: var(--ink3); line-height: 1.7; }
+
+/* ══ PROGRESS ══ */
+.progress-bar-wrap {
+  margin-bottom: 18px;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--ink2);
+  margin-bottom: 6px;
+}
+.progress-label b { color: var(--green); }
+.progress-track {
+  height: 8px;
+  background: var(--rule);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 999px;
+  transition: width .5s ease;
+}
+
+/* ══ FOOTER ══ */
+.footer {
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.footer-brand { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--ink3); }
+.footer-note { font-size: 11px; color: var(--ink3); }
+
+/* ══ PRINT STYLES ══ */
+@media print {
+  .cfg-banner, .toolbar, .filter-row, .btn, .print-btn, .search, .cfg-form, .no-print { display: none !important; }
+  .page { padding: 0; max-width: 100%; }
+  .card { box-shadow: none; border: 1px solid #ccc; }
+  .masthead { break-inside: avoid; }
+  body { background: white; }
+  tbody tr.zero { display: none; }
+}
+
+/* ══ MOBILE ══ */
+@media (max-width: 600px) {
+  .masthead-name { font-size: 24px; }
+  .cfg-input { width: 100%; }
+  .breakdown { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="masthead-brand">
+      <div class="masthead-icon">🍞</div>
+      <div>
+        <div class="masthead-name">El Obrador</div>
+        <div class="masthead-sub">Orden de Producción · Jefe de Planta</div>
+      </div>
+    </div>
+    <div class="masthead-meta">
+      <div class="meta-fecha" id="metaFecha">—</div>
+      <div class="meta-hora">Actualizado: <span id="metaHora">—</span></div>
+      <div class="meta-puntos" id="metaPuntos"></div>
+    </div>
+  </div>
+
+  <!-- CONFIG BANNER -->
+  <div class="cfg-banner" id="cfgBanner">
+    <div class="cfg-icon">⚙️</div>
+    <div class="cfg-body">
+      <div class="cfg-title">Conectar con Google Sheets</div>
+      <div class="cfg-desc">
+        Pega el ID de tu hoja de cálculo para cargar automáticamente la orden del día.<br>
+        Lo encuentras en la URL: <code style="background:rgba(26,78,128,.1);padding:1px 5px;border-radius:3px;font-size:11px;">docs.google.com/spreadsheets/d/<b style="color:var(--blue)">[ID aquí]</b>/edit</code>
+      </div>
+      <div class="cfg-form">
+        <div>
+          <label class="cfg-label">ID de Google Sheets</label>
+          <input class="cfg-input" id="sheetIdInput" placeholder="1LQzEVe2R5GFzO_CnFaz..." value="">
+        </div>
+        <button class="btn btn-amber" onclick="connectSheet()">🔗 Conectar</button>
+        <button class="btn btn-ghost" onclick="toggleCfg()">Ocultar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERTS -->
+  <div id="alertOk"   class="alert-ok   alert-hidden">✅ <span id="alertOkMsg"></span></div>
+  <div id="alertWarn" class="alert-warn alert-hidden">⚠️ <span id="alertWarnMsg"></span></div>
+  <div id="alertErr"  class="alert-err  alert-hidden">
+    <div class="ae-icon">❌</div>
+    <div><div class="ae-title" id="alertErrTitle">Error</div><div class="ae-desc" id="alertErrDesc"></div></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row" id="statsRow" style="display:none;">
+    <div class="stat-box">
+      <div class="s-lbl">Puntos reportados</div>
+      <div class="s-val" id="stPuntos">—</div>
+    </div>
+    <div class="stat-box">
+      <div class="s-lbl">Productos a hacer</div>
+      <div class="s-val warn" id="stItems">—</div>
+    </div>
+    <div class="stat-box">
+      <div class="s-lbl">Total unidades</div>
+      <div class="s-val hi" id="stTotal">—</div>
+    </div>
+    <div class="stat-box">
+      <div class="s-lbl">% Completado</div>
+      <div class="s-val" id="stPct" style="color:var(--green)">0%</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-bar-wrap" id="progressWrap" style="display:none;">
+    <div class="progress-label">
+      <span>Progreso de producción del día</span>
+      <b id="progLabel">0 / 0 listos</b>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar no-print">
+    <div>
+      <div class="section-title">Orden de producción</div>
+      <div class="section-sub" id="toolbarSub">—</div>
+    </div>
+    <div class="toolbar-right">
+      <input class="search" id="searchInput" placeholder="🔍 Buscar pan..." oninput="filterTable()">
+      <button class="btn btn-ghost" onclick="loadData()">🔄 Actualizar</button>
+      <button class="btn btn-green" onclick="resetChecks()">↺ Reiniciar</button>
+      <button class="print-btn" onclick="window.print()">🖨️ Imprimir</button>
+    </div>
+  </div>
+
+  <!-- FILTER PILLS -->
+  <div class="filter-row no-print" id="filterRow">
+    <button class="f-pill active" onclick="setFilter('all',this)">Todos</button>
+    <button class="f-pill" onclick="setFilter('pending',this)">Por hacer</button>
+    <button class="f-pill" onclick="setFilter('done',this)">Listos ✓</button>
+    <button class="f-pill" onclick="setFilter('big',this)">Cantidad alta (+50)</button>
+  </div>
+
+  <!-- MAIN TABLE -->
+  <div class="card">
+    <div class="tbl-wrap">
+      <div id="tableArea">
+        <div class="loading" id="loadingState">
+          <div class="spinner"></div>
+          <div class="loading-text">Cargando orden de producción...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-brand">El Obrador — Producción</div>
+    <div class="footer-note" id="footerNote">Conecta tu Google Sheets para comenzar</div>
+  </div>
+</div>
+
+<script>
+/* ══ STATE ══ */
+let SHEET_ID = localStorage.getItem("obrador_jefe_sheetid") || "";
+let PROD_DATA = [];   // [{id, name, puntos:{}, total, checked}]
+let PUNTOS_FOUND = [];
+let FILTER = "all";
+let LAST_LOAD = null;
+
+const SHEET_NAMES = ["FARO","La 15","La15","Albergue","Dubris","consolidado","Consolidado","CONSOLIDADO"];
+
+/* ══ INIT ══ */
+window.onload = () => {
+  updateClock();
+  setInterval(updateClock, 30000);
+  setInterval(() => { if(SHEET_ID) loadData(); }, 5 * 60 * 1000); // Auto-refresh every 5 min
+
+  if(SHEET_ID) {
+    document.getElementById("sheetIdInput").value = SHEET_ID;
+    loadData();
+  } else {
+    document.getElementById("tableArea").innerHTML = emptyStateHtml(
+      "📋", "Conecta tu hoja de cálculo",
+      "Ingresa el ID de tu Google Sheets arriba para cargar automáticamente\nla orden de producción del día."
+    );
+    document.getElementById("loadingState") && (document.getElementById("loadingState").style.display = "none");
+  }
+};
+
+function updateClock() {
+  const d = new Date();
+  const dias = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+  const mes  = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  const pad  = v => String(v).padStart(2,"0");
+  document.getElementById("metaFecha").textContent =
+    `${dias[d.getDay()]} ${d.getDate()} de ${mes[d.getMonth()]}`;
+  document.getElementById("metaHora").textContent =
+    `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/* ══ CONNECT ══ */
+function connectSheet() {
+  const raw = document.getElementById("sheetIdInput").value.trim();
+  // Accept full URL or just ID
+  let id = raw;
+  const m = raw.match(/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  if(m) id = m[1];
+  if(!id) { showErr("ID vacío", "Ingresa el ID o la URL de tu Google Sheets."); return; }
+  SHEET_ID = id;
+  localStorage.setItem("obrador_jefe_sheetid", id);
+  loadData();
+}
+
+function toggleCfg() {
+  const b = document.getElementById("cfgBanner");
+  const form = b.querySelector(".cfg-form");
+  form.style.display = form.style.display === "none" ? "" : "none";
+}
+
+/* ══ LOAD DATA ══ */
+async function loadData() {
+  if(!SHEET_ID) return;
+  showLoading();
+  hideAlerts();
+
+  try {
+    // Try to read the "consolidado" sheet first
+    const data = await fetchConsolidado();
+    if(data && data.length > 0) {
+      processConsolidadoData(data);
+    } else {
+      // Fallback: read individual sheets and sum
+      await fetchIndividualSheets();
+    }
+  } catch(e) {
+    console.error(e);
+    showErr(
+      "No se pudo cargar la hoja",
+      `Verifica que:\n• La hoja esté compartida como "Cualquier persona con el enlace puede ver"\n• El ID sea correcto: ${SHEET_ID}\n\nError técnico: ${e.message}`
+    );
+    document.getElementById("tableArea").innerHTML = emptyStateHtml(
+      "🔒", "Hoja no accesible",
+      "Asegúrate de que tu Google Sheets esté compartida públicamente (solo lectura).\n\nVe a tu hoja → Compartir → Acceso general → Cualquier persona con el enlace."
+    );
+  }
+}
+
+async function fetchConsolidado() {
+  // Try CSV export of the consolidado sheet
+  // We use the public CSV export endpoint
+  const names = ["consolidado", "Consolidado", "CONSOLIDADO", "Consolidación"];
+  for(const name of names) {
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(name)}`;
+      const r = await fetch(url);
+      if(r.ok) {
+        const text = await r.text();
+        if(text && !text.includes("<!DOCTYPE")) return parseCSV(text);
+      }
+    } catch {}
+  }
+  return null;
+}
+
+async function fetchIndividualSheets() {
+  // Try to fetch each known sheet and aggregate
+  const knownSheets = ["FARO","La 15","La15","Albergue","Dubris"];
+  const results = {};
+
+  for(const sheet of knownSheets) {
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheet)}`;
+      const r = await fetch(url);
+      if(r.ok) {
+        const text = await r.text();
+        if(text && !text.includes("<!DOCTYPE")) {
+          const parsed = parseCSV(text);
+          if(parsed.length > 1) results[sheet] = parsed;
+        }
+      }
+    } catch {}
+  }
+
+  if(Object.keys(results).length === 0) {
+    throw new Error("No se encontraron hojas con datos. Verifica los permisos.");
+  }
+
+  aggregateFromSheets(results);
+}
+
+/* ══ PARSE CSV ══ */
+function parseCSV(text) {
+  const lines = text.trim().split("\n");
+  return lines.map(line => {
+    // Handle quoted fields
+    const cols = [];
+    let cur = "", inQ = false;
+    for(let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if(c === '"') { inQ = !inQ; }
+      else if(c === ',' && !inQ) { cols.push(cur.trim()); cur = ""; }
+      else { cur += c; }
+    }
+    cols.push(cur.trim());
+    return cols;
+  });
+}
+
+/* ══ PROCESS CONSOLIDADO SHEET ══ */
+function processConsolidadoData(rows) {
+  // Expected columns: Codigo | Producto | FARO | La15 | Albergue | Dubris | PRODUCCION
+  // or: Producto | Produccion
+  if(rows.length < 2) { showErr("Hoja vacía", "La hoja 'consolidado' no tiene datos."); return; }
+
+  const header = rows[0].map(h => h.replace(/"/g,"").trim().toLowerCase());
+  const prodIdx = header.findIndex(h => h.includes("produc") || h.includes("producto"));
+  const codIdx  = header.findIndex(h => h.includes("cod") || h.includes("id"));
+
+  // Find punto columns (between product name and production total)
+  const puntosCols = [];
+  const PUNTO_NAMES = ["faro","la 15","la15","albergue","dubris"];
+  header.forEach((h,i) => {
+    const clean = h.replace(/"/g,"").trim().toLowerCase();
+    if(PUNTO_NAMES.some(p => clean.includes(p))) puntosCols.push({name: rows[0][i].replace(/"/g,""), idx: i});
+  });
+
+  // Production total column = last numeric col or "produccion" col
+  const totalIdx = header.findLastIndex(h => h.includes("producc") || h.includes("total"));
+
+  PUNTOS_FOUND = puntosCols.length ? puntosCols.map(p => p.name) : [];
+
+  const products = [];
+  for(let r = 1; r < rows.length; r++) {
+    const row = rows[r];
+    if(!row || row.length < 2) continue;
+    const rawName = (row[prodIdx] || row[1] || "").replace(/"/g,"").trim();
+    if(!rawName || rawName.toLowerCase().includes("producto") || rawName.toLowerCase().includes("product")) continue;
+    const rawTotal = (row[totalIdx] >= 0 ? row[totalIdx] : row[row.length-1] || "0").replace(/"/g,"");
+    const total = parseInt(rawTotal) || 0;
+    const cod = codIdx >= 0 ? (parseInt(row[codIdx]) || r) : r;
+
+    const puntoBreakdown = {};
+    puntosCols.forEach(p => {
+      puntoBreakdown[p.name] = parseInt((row[p.idx] || "0").replace(/"/g,"")) || 0;
+    });
+
+    products.push({ id: cod, name: rawName, total, puntos: puntoBreakdown, checked: false });
+  }
+
+  if(!products.length) {
+    showErr("Sin datos", "La hoja consolidado no tiene filas de productos con datos.");
+    return;
+  }
+
+  PROD_DATA = products;
+  LAST_LOAD = new Date();
+  renderAll();
+}
+
+/* ══ AGGREGATE FROM INDIVIDUAL SHEETS ══ */
+function aggregateFromSheets(sheetData) {
+  const puntoNames = Object.keys(sheetData);
+  PUNTOS_FOUND = puntoNames;
+
+  // Build product map from first sheet
+  const firstSheet = sheetData[puntoNames[0]];
+  const header = firstSheet[0].map(h => h.replace(/"/g,"").trim().toLowerCase());
+
+  const nameIdx  = header.findIndex(h => h.includes("produc"));
+  const codIdx   = header.findIndex(h => h.includes("cod") || h === "id");
+  const stockIdx = header.findIndex(h => h.includes("stock") || h.includes("mínimo") || h.includes("minimo"));
+  const cantIdx  = header.findIndex(h => h.includes("cantidad"));
+  const solIdx   = header.findIndex(h => h.includes("solicitud"));
+
+  const productMap = {};
+
+  for(const punto of puntoNames) {
+    const rows = sheetData[punto];
+    for(let r = 1; r < rows.length; r++) {
+      const row = rows[r];
+      if(!row || row.length < 2) continue;
+      const rawName = (row[nameIdx >= 0 ? nameIdx : 1] || "").replace(/"/g,"").trim();
+      if(!rawName) continue;
+
+      const cod = codIdx >= 0 ? (parseInt(row[codIdx]) || r) : r;
+      const sol = solIdx >= 0 ? (parseInt(row[solIdx].replace(/"/g,"")) || 0) : 0;
+      const cant = cantIdx >= 0 ? (parseInt((row[cantIdx]||"0").replace(/"/g,"")) || 0) : 0;
+      const stock = stockIdx >= 0 ? (parseInt((row[stockIdx]||"0").replace(/"/g,"")) || 0) : 0;
+
+      // Compute solicitud if not present: max(0, stock - cant)
+      const efectiveSol = solIdx >= 0 ? sol : Math.max(0, stock - cant);
+
+      if(!productMap[rawName]) {
+        productMap[rawName] = { id: cod, name: rawName, total: 0, puntos: {}, checked: false };
+      }
+      productMap[rawName].puntos[punto] = efectiveSol;
+      productMap[rawName].total += efectiveSol;
+    }
+  }
+
+  PROD_DATA = Object.values(productMap);
+  LAST_LOAD = new Date();
+  renderAll();
+}
+
+/* ══ RENDER ══ */
+function renderAll() {
+  if(!PROD_DATA.length) {
+    document.getElementById("tableArea").innerHTML = emptyStateHtml("📋","Sin datos para hoy","Cuando los puntos carguen el inventario, aparecerá aquí la orden del día.");
+    return;
+  }
+
+  updateStats();
+  updateMeta();
+  renderTable();
+  showAlertOk(`Datos cargados — ${PROD_DATA.length} productos · Última actualización: ${fmtTime(LAST_LOAD)}`);
+}
+
+function updateStats() {
+  const withProd = PROD_DATA.filter(p => p.total > 0);
+  const checked  = PROD_DATA.filter(p => p.checked && p.total > 0);
+  const total    = PROD_DATA.reduce((a,b) => a + b.total, 0);
+  const pct      = withProd.length ? Math.round(checked.length / withProd.length * 100) : 0;
+
+  document.getElementById("statsRow").style.display = "";
+  document.getElementById("progressWrap").style.display = "";
+  document.getElementById("stPuntos").textContent = `${PUNTOS_FOUND.length}/${PUNTOS_FOUND.length}`;
+  document.getElementById("stItems").textContent  = withProd.length;
+  document.getElementById("stTotal").textContent  = total;
+  document.getElementById("stPct").textContent    = pct + "%";
+  document.getElementById("progFill").style.width = pct + "%";
+  document.getElementById("progLabel").textContent = `${checked.length} / ${withProd.length} listos`;
+}
+
+function updateMeta() {
+  const now = new Date();
+  const pad = v => String(v).padStart(2,"0");
+  const mes = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  document.getElementById("metaHora").textContent =
+    `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  // Punto chips
+  const chips = PUNTOS_FOUND.map(p =>
+    `<span class="punto-chip chip-ok">${p} ✓</span>`
+  ).join("");
+  document.getElementById("metaPuntos").innerHTML = chips;
+
+  // Toolbar sub
+  const total = PROD_DATA.reduce((a,b)=>a+b.total,0);
+  document.getElementById("toolbarSub").textContent =
+    `${PROD_DATA.filter(p=>p.total>0).length} referencias · ${total} unidades totales`;
+
+  // Footer
+  document.getElementById("footerNote").textContent =
+    `Hoja conectada · ID: ${SHEET_ID.slice(0,18)}... · Actualizado ${fmtTime(LAST_LOAD)}`;
+}
+
+function renderTable() {
+  const q = (document.getElementById("searchInput")||{}).value?.toLowerCase() || "";
+  let rows = PROD_DATA.filter(p => {
+    if(q && !p.name.toLowerCase().includes(q)) return false;
+    if(FILTER === "pending") return p.total > 0 && !p.checked;
+    if(FILTER === "done")    return p.checked && p.total > 0;
+    if(FILTER === "big")     return p.total >= 50;
+    return true;
+  });
+
+  // Sort: unchecked first, then by total desc
+  rows = rows.slice().sort((a,b) => {
+    if(a.checked !== b.checked) return a.checked ? 1 : -1;
+    return b.total - a.total;
+  });
+
+  if(!rows.length) {
+    document.getElementById("tableArea").innerHTML = emptyStateHtml("🔍","Sin resultados","Prueba con otro filtro o término de búsqueda.");
+    return;
+  }
+
+  const hasPuntos = PUNTOS_FOUND.length > 0;
+
+  const tableHtml = `<table>
+    <thead>
+      <tr>
+        <th class="c">✓</th>
+        <th class="c">#</th>
+        <th>Producto</th>
+        ${hasPuntos ? PUNTOS_FOUND.map(p=>`<th class="c" style="font-size:9px">${p}</th>`).join("") : ""}
+        <th class="c">PRODUCCIÓN</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map((p,rowI) => {
+        const cls = p.checked ? "done-row" : (p.total === 0 ? "zero" : (p.total >= 100 ? "prio" : ""));
+        const prodCls = p.total === 0 ? "prod-zero" : (p.total >= 100 ? "prod-big" : (p.total >= 30 ? "prod-med" : "prod-low"));
+        const prodTxt = p.total === 0 ? "✓ OK" : p.total;
+
+        const puntoCells = hasPuntos ? PUNTOS_FOUND.map(pt => {
+          const v = p.puntos[pt] || 0;
+          return `<td class="td-c"><span style="font-size:13px;font-variant-numeric:tabular-nums;color:${v>0?"var(--red)":"var(--green)"};font-weight:${v>0?"700":"400"}">${v>0?v:"—"}</span></td>`;
+        }).join("") : "";
+
+        const globalIdx = PROD_DATA.indexOf(p);
+
+        return `<tr class="${cls}" id="row_${globalIdx}">
+          <td class="check-wrap">
+            <input type="checkbox" class="prod-check" ${p.checked?"checked":""} onchange="toggleCheck(${globalIdx},this)">
+          </td>
+          <td class="td-code">${p.id}</td>
+          <td class="td-name">${p.name}${p.checked?'<span style="font-size:11px;color:var(--green);margin-left:6px">✓ Listo</span>':""}</td>
+          ${puntoCells}
+          <td class="td-c"><span class="prod-num ${prodCls}">${prodTxt}</span></td>
+        </tr>`;
+      }).join("")}
+    </tbody>
+  </table>`;
+
+  document.getElementById("tableArea").innerHTML = tableHtml;
+}
+
+/* ══ INTERACTIONS ══ */
+function toggleCheck(i, el) {
+  PROD_DATA[i].checked = el.checked;
+  updateStats();
+  renderTable();
+  // Auto-save checks to localStorage
+  const checks = PROD_DATA.map(p => p.checked);
+  localStorage.setItem("obrador_checks_" + today(), JSON.stringify(checks));
+}
+
+function resetChecks() {
+  if(!confirm("¿Reiniciar todos los checks de producción?")) return;
+  PROD_DATA.forEach(p => p.checked = false);
+  localStorage.removeItem("obrador_checks_" + today());
+  updateStats();
+  renderTable();
+}
+
+function loadSavedChecks() {
+  const saved = localStorage.getItem("obrador_checks_" + today());
+  if(!saved) return;
+  const checks = JSON.parse(saved);
+  checks.forEach((v,i) => { if(PROD_DATA[i]) PROD_DATA[i].checked = v; });
+}
+
+function setFilter(f, el) {
+  FILTER = f;
+  document.querySelectorAll(".f-pill").forEach(p => p.classList.remove("active"));
+  el.classList.add("active");
+  renderTable();
+}
+
+function filterTable() {
+  renderTable();
+}
+
+/* ══ ALERTS ══ */
+function showAlertOk(msg) {
+  hideAlerts();
+  document.getElementById("alertOk").classList.remove("alert-hidden");
+  document.getElementById("alertOkMsg").textContent = msg;
+}
+function showAlertWarn(msg) {
+  hideAlerts();
+  document.getElementById("alertWarn").classList.remove("alert-hidden");
+  document.getElementById("alertWarnMsg").textContent = msg;
+}
+function showErr(title, desc) {
+  hideAlerts();
+  document.getElementById("alertErr").classList.remove("alert-hidden");
+  document.getElementById("alertErrTitle").textContent = title;
+  document.getElementById("alertErrDesc").innerHTML = desc.replace(/\n/g,"<br>");
+}
+function hideAlerts() {
+  ["alertOk","alertWarn","alertErr"].forEach(id => {
+    document.getElementById(id).classList.add("alert-hidden");
+  });
+}
+
+/* ══ HELPERS ══ */
+function showLoading() {
+  document.getElementById("tableArea").innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">Cargando datos desde Google Sheets...</div>
+    </div>`;
+}
+
+function emptyStateHtml(icon, title, desc) {
+  return `<div class="empty-state">
+    <div class="empty-icon">${icon}</div>
+    <div class="empty-title">${title}</div>
+    <div class="empty-desc">${desc.replace(/\n/g,"<br>")}</div>
+  </div>`;
+}
+
+function fmtTime(d) {
+  if(!d) return "—";
+  const pad = v => String(v).padStart(2,"0");
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function today() {
+  const d = new Date(), pad = v => String(v).padStart(2,"0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+</script>
+</body>
+</html>
