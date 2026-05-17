@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>El Obrador — Producción</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf7f2;--bg2:#f3ede2;--surface:#ffffff;--surface2:#f8f5ef;
+  --border:#e8e0d0;--border2:#d5c9b5;
+  --text:#1c1812;--text2:#5a5040;--text3:#9a8e7a;
+  --amber:#c47d1a;--amber-bg:#fdf3e0;--amber-bdr:#e8c070;
+  --red:#c0392b;--red-bg:#fdf0ee;--red-bdr:#e8a090;
+  --green:#2d7a4a;--green-bg:#edf7f1;--green-bdr:#90d0aa;
+  --blue:#1a5fa0;--blue-bg:#edf3fc;--blue-bdr:#90b8e8;
+  --purple:#6b3fa0;--purple-bg:#f4effe;--purple-bdr:#c0a0e0;
+  --radius:10px;--radius-lg:16px;
+  --shadow:0 2px 16px rgba(0,0,0,0.08);--shadow-lg:0 8px 40px rgba(0,0,0,0.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;font-size:14px;line-height:1.5;}
+button{cursor:pointer;font-family:inherit;}
+input,select{font-family:inherit;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* LOGIN */
+#scLogin{background:linear-gradient(145deg,#fdf8f0 0%,#f5ead5 100%);align-items:center;justify-content:center;padding:32px 20px;}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:40px 36px;max-width:380px;width:100%;box-shadow:var(--shadow-lg);}
+.login-logo{width:72px;height:72px;background:var(--amber);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 14px;box-shadow:0 4px 20px rgba(196,125,26,0.35);}
+.login-app{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--text);text-align:center;letter-spacing:-.5px;}
+.login-sub{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px;text-align:center;margin-bottom:32px;margin-top:4px;}
+.f-lbl{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;}
+.f-inp{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);padding:11px 14px;font-size:14px;color:var(--text);outline:none;transition:border-color .2s;margin-bottom:14px;}
+.f-inp:focus{border-color:var(--amber);}
+.f-sel{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);padding:11px 14px;font-size:14px;color:var(--text);outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a8e7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer;transition:border-color .2s;margin-bottom:14px;}
+.f-sel:focus{border-color:var(--amber);}
+.login-btn{width:100%;background:var(--amber);color:#fff;border:none;border-radius:var(--radius);padding:13px;font-size:15px;font-weight:700;transition:all .15s;box-shadow:0 4px 16px rgba(196,125,26,0.3);}
+.login-btn:hover{background:#b5720f;transform:translateY(-1px);}
+.login-btn:active{transform:translateY(0);}
+.login-err{background:var(--red-bg);border:1px solid var(--red-bdr);border-radius:8px;padding:9px 14px;font-size:13px;color:var(--red);margin-top:10px;display:none;text-align:center;}
+.admin-link{text-align:center;margin-top:18px;font-size:12px;color:var(--text3);}
+.admin-link span{color:var(--amber);font-weight:600;cursor:pointer;text-decoration:underline;}
+
+/* HEADER */
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;gap:12px;}
+.hdr-brand{display:flex;align-items:center;gap:10px;}
+.hdr-icon{width:36px;height:36px;background:var(--amber);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.hdr-name{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text);}
+.hdr-sub{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;}
+.hdr-right{display:flex;align-items:center;gap:8px;}
+.hdr-clock{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 11px;font-size:12px;color:var(--text3);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.hdr-clock b{color:var(--amber);font-weight:600;}
+.hdr-user{background:var(--amber-bg);border:1px solid var(--amber-bdr);border-radius:8px;padding:5px 11px;font-size:12px;color:var(--amber);font-weight:700;white-space:nowrap;}
+.logout-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--text3);transition:all .15s;}
+.logout-btn:hover{border-color:var(--red);color:var(--red);}
+
+/* TABS */
+.tabs-bar{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;padding:0 14px;gap:2px;scrollbar-width:none;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{background:none;border:none;color:var(--text3);font-size:13px;font-weight:500;padding:11px 16px;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px;transition:color .2s,border-color .2s;}
+.tab-btn:hover{color:var(--text2);}
+.tab-btn.active{color:var(--amber);border-bottom-color:var(--amber);}
+.tab-dot{width:7px;height:7px;border-radius:50%;background:var(--border2);transition:background .3s;flex-shrink:0;}
+.tab-btn.done .tab-dot{background:var(--green);}
+.tab-btn.active:not(.done) .tab-dot{background:var(--amber);}
+
+/* MAIN */
+.main{max-width:1000px;margin:0 auto;padding:20px 14px 60px;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ALERTS */
+.alerts-band{margin-bottom:16px;}
+.alert-card{border-radius:var(--radius);padding:11px 14px;margin-bottom:7px;display:flex;align-items:flex-start;gap:10px;border:1px solid;}
+.alert-card.type-rotation{background:var(--purple-bg);border-color:var(--purple-bdr);}
+.alert-card.type-overstock{background:var(--amber-bg);border-color:var(--amber-bdr);}
+.alert-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.alert-body{flex:1;}
+.alert-title{font-size:13px;font-weight:700;margin-bottom:1px;}
+.alert-card.type-rotation .alert-title{color:var(--purple);}
+.alert-card.type-overstock .alert-title{color:var(--amber);}
+.alert-desc{font-size:12px;color:var(--text2);}
+.alert-action{font-size:11px;font-weight:700;color:var(--purple);cursor:pointer;text-decoration:underline;margin-top:3px;display:inline-block;}
+
+/* SEC HEAD */
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.sec-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--text);}
+.sec-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.badge{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid;}
+.badge-amber{background:var(--amber-bg);border-color:var(--amber-bdr);color:var(--amber);}
+.badge-green{background:var(--green-bg);border-color:var(--green-bdr);color:var(--green);}
+
+/* CARD & TABLE */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);}
+.toolbar{background:var(--surface2);border-bottom:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;}
+.search{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:7px 11px;font-size:13px;color:var(--text);width:190px;outline:none;transition:border-color .2s;}
+.search:focus{border-color:var(--amber);}
+.search::placeholder{color:var(--text3);}
+.tb-actions{display:flex;gap:6px;}
+.btn{border:none;border-radius:8px;padding:7px 13px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--text3);}
+.btn-ghost:hover{border-color:var(--text2);color:var(--text2);}
+.btn-amber{background:var(--amber);color:#fff;box-shadow:0 2px 10px rgba(196,125,26,0.25);}
+.btn-amber:hover{background:#b5720f;transform:translateY(-1px);}
+.btn-amber:active{transform:translateY(0);}
+.btn-amber:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn-blue{background:var(--blue-bg);border:1px solid var(--blue-bdr);color:var(--blue);}
+.btn-blue:hover{background:#d0e4f5;}
+.btn-red{background:var(--red-bg);border:1px solid var(--red-bdr);color:var(--red);}
+.btn-green{background:var(--green-bg);border:1px solid var(--green-bdr);color:var(--green);text-decoration:none;}
+.btn-purple{background:var(--purple-bg);border:1px solid var(--purple-bdr);color:var(--purple);}
+
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:500px;}
+thead th{background:var(--surface2);border-bottom:1px solid var(--border);padding:9px 13px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);white-space:nowrap;}
+th.c{text-align:center;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--surface2);}
+tbody tr.row-over{background:#fffbf0;}
+tbody tr.row-over:hover{background:#fff7e0;}
+tbody tr.row-short{background:#fff5f4;}
+tbody tr.row-short:hover{background:#ffefed;}
+td{padding:8px 13px;vertical-align:middle;}
+.td-code{font-size:11px;color:var(--text3);text-align:center;font-variant-numeric:tabular-nums;}
+.td-name{font-weight:600;color:var(--text);font-size:13px;}
+.td-stock{text-align:center;color:var(--text3);font-size:13px;font-variant-numeric:tabular-nums;}
+.td-flags{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap;}
+.flag{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;border:1px solid;white-space:nowrap;}
+.flag-over{background:var(--amber-bg);border-color:var(--amber-bdr);color:var(--amber);}
+.flag-rot{background:var(--purple-bg);border-color:var(--purple-bdr);color:var(--purple);cursor:pointer;}
+
+/* QTY */
+.qty-cell{display:flex;align-items:center;gap:5px;justify-content:center;}
+.qty-btn{width:28px;height:28px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text2);font-size:17px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;user-select:none;}
+.qty-btn:hover{border-color:var(--amber);color:var(--amber);}
+.qty-btn:active{transform:scale(.9);}
+.qty-input{width:60px;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-size:15px;font-weight:600;text-align:center;padding:6px 2px;outline:none;transition:border-color .2s,box-shadow .2s;font-variant-numeric:tabular-nums;-moz-appearance:textfield;}
+.qty-input::-webkit-outer-spin-button,.qty-input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.qty-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(196,125,26,.12);}
+.qty-input.edited{border-color:rgba(196,125,26,.5);background:#fffbf2;}
+.qty-input.over{border-color:rgba(196,125,26,.6);background:#fff8e8;}
+.qty-input.short{border-color:rgba(192,57,43,.5);background:#fff5f4;}
+
+/* PILL */
+.pill{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;}
+.pill-zero{background:var(--surface2);color:var(--text3);}
+.pill-ok{background:var(--green-bg);color:var(--green);}
+.pill-warn{background:var(--red-bg);color:var(--red);}
+.req-btn{font-size:10px;padding:2px 7px;border-radius:6px;border:1px solid var(--blue-bdr);background:var(--blue-bg);color:var(--blue);font-weight:600;cursor:pointer;transition:all .12s;white-space:nowrap;}
+.req-btn:hover{background:#d0e4f5;}
+
+/* PROGRESS */
+.prog-row{display:flex;align-items:center;gap:12px;margin-top:14px;}
+.prog-lbl{font-size:11px;color:var(--text3);min-width:80px;}
+.prog-track{flex:1;height:5px;background:var(--border);border-radius:999px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--amber);border-radius:999px;transition:width .4s ease;}
+.prog-pct{font-size:12px;font-weight:700;color:var(--amber);min-width:34px;text-align:right;font-variant-numeric:tabular-nums;}
+
+/* SUMMARY */
+.summary{margin-top:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:15px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;box-shadow:var(--shadow);}
+.stats{display:flex;gap:22px;flex-wrap:wrap;}
+.stat-lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);}
+.stat-val{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--text);}
+.stat-val.warn{color:var(--red);}
+.stat-val.hi{color:var(--amber);}
+.save-box{display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.save-hint{font-size:11px;color:var(--text3);}
+
+/* CONSOL */
+.consol-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:16px;}
+.consol-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow);}
+.s-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:700;}
+.s-val{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--text);margin-top:4px;}
+.s-val.warn{color:var(--red);}
+.wa-box{background:var(--green-bg);border:1px solid var(--green-bdr);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.wa-title{font-size:14px;font-weight:700;color:var(--green);}
+.wa-desc{font-size:12px;color:var(--text2);margin-top:2px;}
+.wa-actions{display:flex;gap:7px;flex-wrap:wrap;}
+.c-name{color:var(--text);font-weight:600;}
+.c-code{color:var(--text3);font-size:11px;}
+.c-num{text-align:center;font-variant-numeric:tabular-nums;color:var(--text3);}
+.c-prod{text-align:center;font-variant-numeric:tabular-nums;font-weight:700;}
+.c-prod.zero{color:var(--text3);}
+.c-prod.hi{color:var(--amber);}
+
+/* ADMIN */
+#scAdmin{background:var(--bg);overflow-y:auto;}
+.admin-wrap{max-width:680px;margin:0 auto;padding:28px 18px;}
+.admin-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.admin-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;}
+.admin-sec{margin-bottom:26px;}
+.admin-sec-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:11px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+.field-group{margin-bottom:13px;}
+.field-hint{font-size:11px;color:var(--text3);margin-top:4px;}
+.punto-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:10px;flex-wrap:wrap;}
+.p-name{font-weight:600;color:var(--text);}
+.p-meta{font-size:11px;color:var(--text3);margin-top:2px;}
+.p-actions{display:flex;gap:6px;}
+.st-ok{color:var(--green);font-weight:700;}
+.st-warn{color:var(--amber);font-weight:700;}
+.sheets-box{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:var(--radius);margin-bottom:12px;border:1px solid;}
+.sheets-box.on{background:var(--green-bg);border-color:var(--green-bdr);}
+.sheets-box.off{background:var(--amber-bg);border-color:var(--amber-bdr);}
+.sheets-box .st-title{font-weight:700;font-size:13px;}
+.sheets-box.on .st-title{color:var(--green);}
+.sheets-box.off .st-title{color:var(--amber);}
+.sheets-box .st-desc{font-size:11px;color:var(--text2);}
+.guide-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.85;}
+.guide-box code{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:12px;color:var(--amber);}
+
+/* RECORDS */
+.rec-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 15px;display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-wrap:wrap;gap:7px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.rec-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;}
+.rec-name{font-weight:600;font-size:14px;color:var(--text);}
+.rec-meta{font-size:11px;color:var(--text3);margin-top:1px;}
+.rec-time{font-size:12px;color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:500;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:20px;padding:26px;max-width:440px;width:100%;box-shadow:var(--shadow-lg);}
+.modal-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:5px;}
+.modal-desc{font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.7;}
+.modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:18px;}
+.modal-close{background:none;border:none;font-size:22px;color:var(--text3);position:absolute;right:22px;top:18px;cursor:pointer;line-height:1;}
+.modal{position:relative;}
+
+/* TOAST */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--text);color:#fff;border-radius:12px;padding:11px 22px;display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;z-index:999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--shadow-lg);white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:560px){
+  .hdr-clock{display:none;}
+  .search{width:130px;}
+  .stat-val{font-size:20px;}
+  .sec-title{font-size:18px;}
+  .td-name{font-size:12px;}
+  .login-box{padding:26px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="scLogin" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">🍞</div>
+    <div class="login-app">El Obrador</div>
+    <div class="login-sub">Control de Producción</div>
+    <label class="f-lbl">Punto de venta</label>
+    <select class="f-sel" id="loginPunto"></select>
+    <label class="f-lbl">Contraseña</label>
+    <input class="f-inp" id="loginPass" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Ingresar →</button>
+    <div class="login-err" id="loginErr">Contraseña incorrecta. Inténtalo de nuevo.</div>
+    <div class="admin-link">¿Eres administrador? <span onclick="openAdmin()">Acceder al panel</span></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="scApp" class="screen">
+  <header class="hdr">
+    <div class="hdr-brand">
+      <div class="hdr-icon">🍞</div>
+      <div><div class="hdr-name">El Obrador</div><div class="hdr-sub">Producción</div></div>
+    </div>
+    <div class="hdr-right">
+      <div class="hdr-clock"><b id="clkT">--:--</b> · <span id="clkD">--</span></div>
+      <div class="hdr-user" id="hdrUser">PUNTO</div>
+      <button class="logout-btn" onclick="doLogout()">Salir</button>
+    </div>
+  </header>
+  <div class="tabs-bar" id="tabsBar"></div>
+  <div class="main">
+    <div id="panelContent"></div>
+    <div style="margin-top:26px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:9px;">📋 Registros del día</div>
+      <div id="recList"><p style="color:var(--text3);font-size:13px;">Ningún inventario guardado aún.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="scAdmin" class="screen">
+  <div class="admin-wrap">
+    <div class="admin-hdr">
+      <div><div class="admin-title">🔧 Panel Admin</div><div style="font-size:12px;color:var(--text3);">El Obrador Producción</div></div>
+      <button class="btn btn-ghost" onclick="closeAdmin()">← Volver</button>
+    </div>
+
+    <div class="admin-sec">
+      <div class="admin-sec-title">📊 Google Sheets</div>
+      <div class="sheets-box off" id="sheetsBox">
+        <div style="font-size:22px;">⚠️</div>
+        <div><div class="st-title">Sin configurar</div><div class="st-desc">Ingresa el ID de tu hoja para sincronizar</div></div>
+      </div>
+      <div class="field-group">
+        <label class="f-lbl">ID de Google Sheets</label>
+        <input class="f-inp" id="cfgSheetId" placeholder="1LQzEVe2R5GFzO_CnFaz...">
+        <div class="field-hint">URL de tu hoja: docs.google.com/spreadsheets/d/<b>[ID]</b>/edit</div>
+      </div>
+      <div class="field-group">
+        <label class="f-lbl">URL webhook Make.com / Zapier</label>
+        <input class="f-inp" id="cfgWebhook" placeholder="https://hook.make.com/...">
+        <div class="field-hint">Recibe inventarios y los guarda en Sheets automáticamente</div>
+      </div>
+      <button class="btn btn-amber" onclick="saveSheetCfg()">💾 Guardar</button>
+    </div>
+
+    <div class="admin-sec">
+      <div class="admin-sec-title">📱 WhatsApp Producción</div>
+      <div class="field-group">
+        <label class="f-lbl">Número 1 (con código de país, sin +)</label>
+        <input class="f-inp" id="cfgWa1" placeholder="573001234567" type="tel">
+      </div>
+      <div class="field-group">
+        <label class="f-lbl">Número 2 (opcional)</label>
+        <input class="f-inp" id="cfgWa2" placeholder="573009876543" type="tel">
+      </div>
+      <button class="btn btn-green" onclick="saveWaCfg()">💾 Guardar números</button>
+    </div>
+
+    <div class="admin-sec">
+      <div class="admin-sec-title">🏪 Puntos de venta</div>
+      <div id="puntosAdmin"></div>
+      <button class="btn btn-blue" onclick="openModal('modalAddPunto')" style="margin-top:8px;">+ Agregar punto</button>
+      <div class="field-hint" style="margin-top:8px;">ℹ️ Los puntos sin rotación activa (como Dubris) no reciben sugerencias de traslado.</div>
+    </div>
+
+    <div class="admin-sec">
+      <div class="admin-sec-title">🔐 Clave administrador</div>
+      <div class="field-group">
+        <label class="f-lbl">Nueva clave</label>
+        <input class="f-inp" id="cfgAdminPass" type="password" placeholder="••••••">
+      </div>
+      <button class="btn btn-ghost" onclick="saveAdminPass()">Actualizar clave</button>
+    </div>
+
+    <div class="admin-sec">
+      <div class="admin-sec-title">📖 Guía de integración con Make.com</div>
+      <div class="guide-box">
+        <b>Paso 1:</b> Crea cuenta gratis en <b>make.com</b><br>
+        <b>Paso 2:</b> Nuevo escenario → Trigger: <code>Webhooks → Custom webhook</code><br>
+        <b>Paso 3:</b> Copia la URL del webhook y pégala arriba<br>
+        <b>Paso 4:</b> Añade módulo <code>Google Sheets → Add a row</code> y mapea los campos<br>
+        <b>Paso 5:</b> Añade módulo <code>HTTP → Make a request</code> a <code>https://api.whatsapp.com</code><br><br>
+        <b>Hoja "Configuracion" en Sheets:</b><br>
+        A1: <code>wa1</code> · B1: número · A2: <code>wa2</code> · B2: número · A3: <code>admin_pass</code> · B3: clave
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Stock request -->
+<div class="modal-overlay" id="modalStock">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalStock')">×</button>
+    <div class="modal-title">📈 Solicitar ampliación de stock</div>
+    <div class="modal-desc" id="mStockDesc"></div>
+    <div class="field-group">
+      <label class="f-lbl">Nuevo stock mínimo que solicitas</label>
+      <input class="f-inp" id="mStockNew" type="number" min="1" placeholder="Ej: 50">
+    </div>
+    <div class="field-group">
+      <label class="f-lbl">Motivo (opcional)</label>
+      <input class="f-inp" id="mStockReason" placeholder="Se está vendiendo más de lo habitual...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalStock')">Cancelar</button>
+      <button class="btn btn-amber" onclick="sendStockReq()">📨 Enviar solicitud</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Rotation suggestion -->
+<div class="modal-overlay" id="modalRot">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalRot')">×</button>
+    <div class="modal-title">🔄 Sugerencia de rotación</div>
+    <div class="modal-desc" id="mRotDesc"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalRot')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Add punto -->
+<div class="modal-overlay" id="modalAddPunto">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalAddPunto')">×</button>
+    <div class="modal-title">🏪 Nuevo punto de venta</div>
+    <div class="modal-desc">El punto usará el mismo listado de productos.</div>
+    <div class="field-group">
+      <label class="f-lbl">Nombre del punto</label>
+      <input class="f-inp" id="nPuntoName" placeholder="Ej: Norte, Centro...">
+    </div>
+    <div class="field-group">
+      <label class="f-lbl">Contraseña</label>
+      <input class="f-inp" id="nPuntoPass" type="password" placeholder="••••••">
+    </div>
+    <div class="field-group">
+      <label class="f-lbl">¿Participa en rotación entre puntos?</label>
+      <select class="f-sel" id="nPuntoRot" style="margin-bottom:0">
+        <option value="1">Sí — puede recibir y dar productos</option>
+        <option value="0">No (como Dubris)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddPunto')">Cancelar</button>
+      <button class="btn btn-amber" onclick="addPunto()">Agregar punto</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<script>
+/* ═══ CONFIG ═══ */
+let CFG=loadCfg();
+function loadCfg(){
+  const def={
+    sheetId:"1LQzEVe2R5GFzO_CnFazwXbGok_6Ucd67VlSZqsv563g",
+    webhook:"",wa1:"",wa2:"",adminPass:"admin123",
+    puntos:[
+      {name:"FARO",     pass:"faro2024",  rotation:true},
+      {name:"La 15",    pass:"la15_2024", rotation:true},
+      {name:"Albergue", pass:"alb2024",   rotation:true},
+      {name:"Dubris",   pass:"dub2024",   rotation:false},
+    ]
+  };
+  try{const s=JSON.parse(localStorage.getItem("obrador_cfg")||"{}");return{...def,...s,puntos:s.puntos||def.puntos};}
+  catch{return def;}
+}
+function saveCfg(){localStorage.setItem("obrador_cfg",JSON.stringify(CFG));}
+
+/* ═══ PRODUCTS ═══ */
+const PRODS=[
+  {id:1,n:"Pan aliñado 600",s:16},{id:2,n:"Pan mantequilla",s:4},{id:3,n:"Pan aliñado 2200",s:6},
+  {id:4,n:"Pan aliñado 5500",s:3},{id:5,n:"Artezano",s:6},{id:6,n:"Chicharrón und",s:100},
+  {id:7,n:"Hogaza Centeno",s:4},{id:8,n:"Pan queso und.",s:100},{id:9,n:"Esponjados",s:24},
+  {id:10,n:"Int. De Remolacha",s:2},{id:11,n:"Buñuelos",s:0},{id:12,n:"Buñuelos inte.",s:0},
+  {id:13,n:"Pandebonos",s:120},{id:14,n:"Torta de pan",s:30},{id:15,n:"Pandebono tradicional",s:60},
+  {id:16,n:"Mogolla und",s:84},{id:17,n:"Int molde De Granola",s:4},{id:18,n:"Mogolla guayaba und.",s:20},
+  {id:19,n:"Hogaza Arándanos",s:4},{id:20,n:"Integral multicereal",s:14},
+  {id:21,n:"Integral fruticereal banano",s:3},{id:22,n:"Integral fruticereal uva",s:3},
+  {id:23,n:"Integral fruticereal coco",s:12},{id:24,n:"Integral semilla andina",s:2},
+  {id:25,n:"Integral almendras y maní",s:3},{id:26,n:"Integral de Vino tinto",s:0},
+  {id:27,n:"Pan choclo 3000",s:4},{id:28,n:"Hogaza semillas",s:4},{id:29,n:"Hogaza dátiles",s:3},
+  {id:30,n:"Babka de pollo",s:3},{id:31,n:"Babka de tomate y parmesano",s:2},{id:32,n:"Pan zapayo",s:3},
+  {id:33,n:"Eclair",s:16},{id:34,n:"Acordeón",s:3},{id:35,n:"Alfajores",s:20},
+  {id:36,n:"Focaccia",s:10},{id:37,n:"Croissant cubierto de choco",s:6},{id:38,n:"Pan de aceitunas",s:2},
+  {id:39,n:"Pasteles rellenos G",s:10},{id:40,n:"Croissant almendras",s:0},
+  {id:41,n:"Pan zanahoria 650",s:2},{id:42,n:"Mini Pan avena Almendras",s:0},
+  {id:43,n:"Pan de avena almendras cuadrado",s:0},{id:44,n:"Quiche Pequeño",s:4},
+  {id:45,n:"Quiche Mediano",s:1},{id:46,n:"Quiche Grande",s:1},{id:47,n:"Pasteles de sagú",s:18},
+  {id:48,n:"Pan de Cardamomo",s:2},{id:49,n:"Croissant de chocolate",s:16},
+  {id:50,n:"Pan de avena y piña",s:2},{id:51,n:"Pan mexicano",s:1},{id:52,n:"Rollito de canela",s:5},
+  {id:53,n:"Bagel",s:0},{id:54,n:"Integral de frutos Rojos",s:2},
+  {id:55,n:"Focaccia de carbón activado",s:0},{id:56,n:"Brioche De chocolate",s:10},
+  {id:57,n:"Pan de moringa",s:2},{id:58,n:"Mogolla chocolate",s:20},{id:59,n:"Pan de cebolla",s:2},
+  {id:60,n:"Pan alemán",s:2},{id:61,n:"Hogaza centeno 2",s:4},{id:62,n:"Hojas de Pan",s:0},
+  {id:63,n:"Rústico de frutas",s:0},{id:64,n:"Brioche de arequipe",s:2},
+  {id:65,n:"Molde multicereal",s:0},{id:66,n:"Brioche alemán",s:0},
+  {id:67,n:"Rústico de brevas",s:2},{id:68,n:"Fougasse",s:1},{id:69,n:"Granizado de chocolate",s:0},
+  {id:70,n:"Tarta pequeña dulce",s:4},{id:71,n:"Integral croissant de queso",s:28},
+  {id:72,n:"Brioche de guayaba",s:2},{id:73,n:"Hojaldre Napolitano",s:2},
+  {id:74,n:"Brioche blanco chocolate",s:2},{id:75,n:"Pastel integral napolitano",s:2},
+  {id:76,n:"Frutos del bosque",s:0},{id:77,n:"Roscón integral mora",s:4},
+  {id:78,n:"Harina de coco sin gluten",s:6},{id:79,n:"Brioche Tricolor",s:2},
+  {id:80,n:"Pastel de espinaca",s:4},{id:81,n:"Pandebono tradicional 2",s:0},
+  {id:82,n:"Tostado integral",s:10},{id:83,n:"Cookies and cream",s:2},
+  {id:84,n:"Torta integral 1/4",s:0},{id:85,n:"Torta integral 1/2",s:0},
+  {id:86,n:"Torta sin alergenos de cacao 1/4",s:0},{id:87,n:"Brioche alemán en molde",s:2},
+  {id:88,n:"Brioche integral cookies and cream",s:2},{id:89,n:"Pan de papa y cacao",s:1},
+  {id:90,n:"Pan de arroz",s:0},{id:91,n:"Sandwich hojaldrado",s:3},
+  {id:92,n:"Croissant de tocineta",s:0},{id:93,n:"Pan brioche cuajada",s:2},
+  {id:94,n:"Pan navideño",s:0},{id:95,n:"Chocolate y banano",s:3},
+  {id:96,n:"Semillas inteligentes",s:3},{id:97,n:"Croissant integral rojo y verde",s:3},
+  {id:98,n:"Hamburguesa brioche grande",s:0},{id:99,n:"Hamburguesa brioche estándar",s:0},
+];
+const N=PRODS.length;
+
+/* ═══ STATE ═══ */
+let USER=null;
+const CANT={};   // {puntoName:[vals]}
+let SAVED=[];
+let STOCK_REQ_IDX=null;
+let CURRENT_VIEW="inventory";
+
+function getCants(name){if(!CANT[name])CANT[name]=new Array(N).fill("");return CANT[name];}
+
+/* ═══ CLOCK ═══ */
+function tick(){
+  const d=new Date(),pad=v=>String(v).padStart(2,"0");
+  const t=document.getElementById("clkT");if(t)t.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const dias=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"],mes=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  const de=document.getElementById("clkD");if(de)de.textContent=`${dias[d.getDay()]} ${d.getDate()} ${mes[d.getMonth()]}`;
+}
+setInterval(tick,30000);tick();
+
+/* ═══ SCREENS ═══ */
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");}
+
+/* ═══ LOGIN ═══ */
+function populateLoginSelect(){
+  const sel=document.getElementById("loginPunto");
+  sel.innerHTML=CFG.puntos.map((p,i)=>`<option value="${i}">${p.name}</option>`).join("");
+}
+function doLogin(){
+  const idx=parseInt(document.getElementById("loginPunto").value);
+  const pass=document.getElementById("loginPass").value.trim();
+  const pt=CFG.puntos[idx];
+  if(!pt||pass!==pt.pass){document.getElementById("loginErr").style.display="block";return;}
+  document.getElementById("loginErr").style.display="none";
+  USER={name:pt.name,idx,rotation:pt.rotation};
+  document.getElementById("hdrUser").textContent=pt.name;
+  buildTabs();
+  renderInventory();
+  show("scApp");
+}
+function doLogout(){USER=null;document.getElementById("loginPass").value="";populateLoginSelect();show("scLogin");}
+function openAdmin(){
+  const p=prompt("Clave de administrador:");
+  if(!p)return;
+  if(p!==CFG.adminPass){alert("Clave incorrecta");return;}
+  renderAdmin();show("scAdmin");
+}
+function closeAdmin(){show("scLogin");}
+
+/* ═══ TABS ═══ */
+function buildTabs(){
+  const bar=document.getElementById("tabsBar");
+  bar.innerHTML=`
+    <button class="tab-btn active" id="tb0" onclick="switchView('inventory',0)">
+      <span class="tab-dot" id="tdot0"></span>${USER.name}
+    </button>
+    <button class="tab-btn" id="tb1" onclick="switchView('consolidado',1)">
+      <span class="tab-dot" id="tdot1"></span>Consolidado
+    </button>`;
+}
+function switchView(view,idx){
+  CURRENT_VIEW=view;
+  document.querySelectorAll(".tab-btn").forEach((b,i)=>b.classList.toggle("active",i===idx));
+  if(view==="inventory")renderInventory();else renderConsolidado();
+}
+
+/* ═══ INVENTORY ═══ */
+function renderInventory(){
+  const cants=getCants(USER.name);
+  const filled=cants.filter(v=>v!=="").length;
+  const pct=Math.round(filled/N*100);
+  const sols=PRODS.map((p,i)=>{const c=parseFloat(cants[i])||0;return cants[i]!==""?Math.max(0,p.s-c):null;});
+  const totalSol=sols.reduce((a,b)=>a+(b||0),0);
+  const falta=sols.filter(v=>v!==null&&v>0).length;
+  const alerts=buildAlerts(cants);
+
+  document.getElementById("panelContent").innerHTML=`
+<div class="sec-head">
+  <div><div class="sec-title">${USER.name}</div><div class="sec-sub">${N} referencias · Inventario del día</div></div>
+  <span class="badge badge-amber">⚡ QuickEdit</span>
+</div>
+${alerts.length?`<div class="alerts-band">${alerts.map(alertHtml).join("")}</div>`:""}
+<div class="card">
+  <div class="toolbar">
+    <input class="search" id="srchInv" placeholder="🔍 Buscar producto..." oninput="filterInv()">
+    <div class="tb-actions">
+      <button class="btn btn-ghost" onclick="clearAll()">🗑 Limpiar</button>
+      <button class="btn btn-ghost" onclick="zeroAll()">Todo en 0</button>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th class="c">#</th><th>Producto</th><th class="c">Stock Mín.</th><th class="c">Cantidad</th><th class="c">Solicitud</th></tr></thead>
+    <tbody id="invTb">${PRODS.map((p,i)=>rowHtml(p,i,cants[i])).join("")}</tbody>
+  </table>
+  </div>
+</div>
+<div class="prog-row">
+  <span class="prog-lbl">Completado:</span>
+  <div class="prog-track"><div class="prog-fill" id="invPF" style="width:${pct}%"></div></div>
+  <span class="prog-pct" id="invPP">${pct}%</span>
+</div>
+<div class="summary">
+  <div class="stats">
+    <div><div class="stat-lbl">Ingresados</div><div class="stat-val hi" id="svFill">${filled}/${N}</div></div>
+    <div><div class="stat-lbl">Con faltante</div><div class="stat-val ${falta>0?"warn":""}" id="svFalta">${falta}</div></div>
+    <div><div class="stat-lbl">Total solicitud</div><div class="stat-val ${totalSol>0?"warn":""}" id="svSol">${totalSol}</div></div>
+  </div>
+  <div class="save-box">
+    <span class="save-hint" id="saveHint">${pct===100?"✅ Listo para guardar":"Completa todos los campos"}</span>
+    <button class="btn btn-amber" id="saveBtn" onclick="guardar()" ${pct<100?"disabled":""}>💾 Guardar inventario</button>
+  </div>
+</div>`;
+  renderRecords();
+}
+
+function rowHtml(p,i,val){
+  const c=parseFloat(val)||0;
+  const sol=val!==""?Math.max(0,p.s-c):null;
+  const over=val!==""&&p.s>0&&c>p.s*1.3;
+  const short=sol!==null&&sol>0;
+  let cls="";if(over&&!short)cls="row-over";else if(short)cls="row-short";
+  let pill='<span class="pill pill-zero">—</span>';
+  if(sol!==null)pill=sol===0?'<span class="pill pill-ok">✓ 0</span>':`<span class="pill pill-warn">▲ ${sol}</span>`;
+  let flags="";
+  if(over){
+    flags+=`<span class="flag flag-over">Acumulación +${c-p.s}</span>`;
+    if(USER.rotation&&CFG.puntos.filter(pt=>pt.rotation&&pt.name!==USER.name).length>0)
+      flags+=`<span class="flag flag-rot" onclick="showRot(${i})">🔄 Ver rotación</span>`;
+  }
+  const inpCls="qty-input"+(val!==""?" edited":"")+(over?" over":"")+(short?" short":"");
+  return`<tr id="r${i}" class="${cls}">
+    <td class="td-code">${p.id}</td>
+    <td class="td-name">${p.n}${flags?`<div class="td-flags">${flags}</div>`:""}</td>
+    <td class="td-stock">${p.s}</td>
+    <td><div class="qty-cell">
+      <button class="qty-btn" onclick="adj(${i},-1)" tabindex="-1">−</button>
+      <input class="${inpCls}" id="q${i}" type="number" min="0" step="1" value="${val}" placeholder="0"
+        oninput="onInput(${i},this.value)" onkeydown="onKey(event,${i})">
+      <button class="qty-btn" onclick="adj(${i},+1)" tabindex="-1">+</button>
+    </div></td>
+    <td style="text-align:center">
+      <div style="display:flex;align-items:center;justify-content:center;gap:5px;">
+        <span id="s${i}">${pill}</span>
+        <button class="req-btn" onclick="openStockReq(${i})">↑ stock</button>
+      </div>
+    </td>
+  </tr>`;
+}
+
+/* ═══ ALERTS ═══ */
+function buildAlerts(cants){
+  if(!USER.rotation)return[];
+  const alerts=[];
+  const rotPuntos=CFG.puntos.filter(p=>p.rotation&&p.name!==USER.name);
+  PRODS.forEach((p,i)=>{
+    if(cants[i]==="")return;
+    const c=parseFloat(cants[i])||0;
+    if(p.s>0&&c>p.s*1.3){
+      const sobra=c-p.s;
+      const otrosConFalta=SAVED.filter(r=>{
+        const otro=CFG.puntos.find(pt=>pt.rotation&&pt.name===r.punto&&pt.name!==USER.name);
+        return otro&&r.filas[i]&&r.filas[i].solicitud>0;
+      });
+      if(otrosConFalta.length>0){
+        alerts.push({type:"rotation",icon:"🔄",title:`Rotación urgente: ${p.n}`,
+          desc:`Tienes ${sobra} unidades extra. ${otrosConFalta.map(r=>r.punto).join(", ")} necesita este producto.`,
+          action:i});
+      } else if(rotPuntos.length>0){
+        alerts.push({type:"overstock",icon:"⚠️",title:`Acumulación: ${p.n}`,
+          desc:`Tienes ${sobra} unidades sobre el mínimo. Puedes distribuir entre ${rotPuntos.map(r=>r.name).join(", ")}.`,
+          action:i});
+      }
+    }
+  });
+  return alerts;
+}
+
+function alertHtml(a){
+  return`<div class="alert-card type-${a.type}">
+    <div class="alert-icon">${a.icon}</div>
+    <div class="alert-body">
+      <div class="alert-title">${a.title}</div>
+      <div class="alert-desc">${a.desc}</div>
+      ${a.action!==undefined?`<span class="alert-action" onclick="showRot(${a.action})">Ver sugerencia →</span>`:""}
+    </div>
+  </div>`;
+}
+
+function showRot(i){
+  const p=PRODS[i];
+  const cants=getCants(USER.name);
+  const c=parseFloat(cants[i])||0;
+  const sobra=c-p.s;
+  const rotPuntos=CFG.puntos.filter(pt=>pt.rotation&&pt.name!==USER.name);
+  const pp=Math.floor(sobra/rotPuntos.length);
+  document.getElementById("mRotDesc").innerHTML=
+    `<b>${p.n}</b> (Código ${p.id})<br><br>`+
+    `Tienes <b>${sobra} unidades extra</b> sobre el stock mínimo de ${p.s}.<br><br>`+
+    `<b>Distribución sugerida:</b><br>`+
+    rotPuntos.map(pt=>`• <b>${pt.name}</b>: trasladar ~${pp} unidades`).join("<br>")+
+    `<br><br><i>💡 Coordina el traslado físico con el responsable del punto receptor.</i>`;
+  openModal("modalRot");
+}
+
+/* ═══ INPUT ═══ */
+function onInput(i,raw){
+  const v=raw===""?"":String(Math.max(0,parseFloat(raw)||0));
+  getCants(USER.name)[i]=v;
+  updateRow(i);updateSummary();
+}
+function adj(i,d){
+  const cants=getCants(USER.name);
+  const nv=Math.max(0,(parseFloat(cants[i])||0)+d);
+  cants[i]=String(nv);
+  const inp=document.getElementById(`q${i}`);
+  if(inp)inp.value=nv;
+  updateRow(i);updateSummary();
+}
+function updateRow(i){
+  const p=PRODS[i],cants=getCants(USER.name),val=cants[i];
+  const c=parseFloat(val)||0,sol=val!==""?Math.max(0,p.s-c):null;
+  const over=val!==""&&p.s>0&&c>p.s*1.3,short=sol!==null&&sol>0;
+  const row=document.getElementById(`r${i}`);
+  if(row)row.className=over&&!short?"row-over":(short?"row-short":"");
+  const inp=document.getElementById(`q${i}`);
+  if(inp){inp.value=val;inp.className="qty-input"+(val!==""?" edited":"")+(over?" over":"")+(short?" short":"");}
+  const sp=document.getElementById(`s${i}`);
+  if(!sp)return;
+  if(sol===null)sp.innerHTML='<span class="pill pill-zero">—</span>';
+  else if(sol===0)sp.innerHTML='<span class="pill pill-ok">✓ 0</span>';
+  else sp.innerHTML=`<span class="pill pill-warn">▲ ${sol}</span>`;
+}
+function updateSummary(){
+  const cants=getCants(USER.name);
+  const filled=cants.filter(v=>v!=="").length,pct=Math.round(filled/N*100);
+  const sols=PRODS.map((p,i)=>{const c=parseFloat(cants[i])||0;return cants[i]!==""?Math.max(0,p.s-c):0;});
+  const totalSol=sols.reduce((a,b)=>a+b,0),falta=sols.filter(v=>v>0).length;
+  const pf=document.getElementById("invPF"),pp=document.getElementById("invPP");
+  if(pf)pf.style.width=pct+"%";if(pp)pp.textContent=pct+"%";
+  const svf=document.getElementById("svFill"),svft=document.getElementById("svFalta"),svs=document.getElementById("svSol");
+  if(svf)svf.textContent=`${filled}/${N}`;
+  if(svft){svft.textContent=falta;svft.className=`stat-val${falta>0?" warn":""}`;}
+  if(svs){svs.textContent=totalSol;svs.className=`stat-val${totalSol>0?" warn":""}`;}
+  const sb=document.getElementById("saveBtn"),sh=document.getElementById("saveHint");
+  if(sb)sb.disabled=pct<100;
+  if(sh)sh.textContent=pct===100?"✅ Listo para guardar":"Completa todos los campos";
+  const tdot=document.getElementById("tdot0");
+  if(tdot)tdot.className=`tab-dot${pct===100?" done":""}`;
+}
+function onKey(e,i){
+  if(e.key==="Enter"||e.key==="Tab"){e.preventDefault();focus(i+1);}
+  if(e.key==="ArrowDown"){e.preventDefault();focus(i+1);}
+  if(e.key==="ArrowUp"){e.preventDefault();focus(i-1);}
+}
+function focus(i){
+  if(i<0||i>=N)return;
+  const el=document.getElementById(`q${i}`);
+  if(el){el.focus();el.select();el.closest("tr").scrollIntoView({block:"nearest"});}
+}
+function filterInv(){
+  const q=document.getElementById("srchInv").value.toLowerCase();
+  PRODS.forEach((p,i)=>{const r=document.getElementById(`r${i}`);if(r)r.style.display=p.n.toLowerCase().includes(q)?"":"none";});
+}
+function clearAll(){getCants(USER.name).fill("");renderInventory();}
+function zeroAll(){getCants(USER.name).fill("0");renderInventory();updateSummary();}
+
+/* ═══ GUARDAR ═══ */
+function guardar(){
+  const now=new Date(),pad=v=>String(v).padStart(2,"0");
+  const fecha=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  const hora=`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  const cants=getCants(USER.name);
+  const filas=PRODS.map((p,i)=>{const c=parseFloat(cants[i])||0;return{...p,cantidad:c,solicitud:Math.max(0,p.s-c)};});
+  const reg={punto:USER.name,puntoIdx:USER.idx,fecha,hora,filas,totalSol:filas.reduce((a,b)=>a+b.solicitud,0)};
+  const idx=SAVED.findIndex(r=>r.puntoIdx===USER.idx&&r.fecha===fecha);
+  if(idx>=0)SAVED[idx]=reg;else SAVED.push(reg);
+  exportCSV(reg);
+  sendWebhook(reg);
+  renderRecords();
+  showToast(`✅ ${USER.name} guardado — ${hora}`);
+  const tdot=document.getElementById("tdot0");if(tdot)tdot.className="tab-dot done";
+  renderInventory();
+}
+
+function exportCSV(reg){
+  const hdr="Punto,Fecha,Hora,Codigo,Producto,Stock_Minimo,Cantidad,Solicitud\n";
+  const rows=reg.filas.map(f=>`"${reg.punto}","${reg.fecha}","${reg.hora}",${f.id},"${f.n}",${f.s},${f.cantidad},${f.solicitud}`).join("\n");
+  const blob=new Blob([hdr+rows],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=`inv_${reg.punto.replace(/\s/g,"_")}_${reg.fecha}.csv`;a.click();URL.revokeObjectURL(url);
+}
+
+async function sendWebhook(reg){
+  if(!CFG.webhook)return;
+  try{
+    const payload={
+      punto:reg.punto,
+      fecha:reg.fecha,
+      hora:reg.hora,
+      totalSolicitud:reg.totalSol,
+      filas:reg.filas.map(f=>({
+        codigo:f.id,producto:f.n,stockMinimo:f.s,
+        cantidad:f.cantidad,solicitud:f.solicitud
+      }))
+    };
+    const dataStr = encodeURIComponent(JSON.stringify(payload));
+    // Metodo principal: fetch url-encoded (compatible con Apps Script)
+    fetch(CFG.webhook, {
+      method:"POST",
+      mode:"no-cors",
+      headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:"data="+dataStr
+    }).catch(()=>{});
+    // Metodo backup: form oculto con iframe
+    let iframe=document.getElementById("whFrame");
+    if(!iframe){
+      iframe=document.createElement("iframe");
+      iframe.id="whFrame";iframe.name="whFrame";
+      iframe.style.cssText="position:absolute;top:-9999px;width:1px;height:1px;border:0";
+      document.body.appendChild(iframe);
+    }
+    const form=document.createElement("form");
+    form.method="POST";form.action=CFG.webhook;form.target="whFrame";form.style.display="none";
+    const inp=document.createElement("input");
+    inp.type="hidden";inp.name="data";inp.value=JSON.stringify(payload);
+    form.appendChild(inp);document.body.appendChild(form);form.submit();
+    setTimeout(()=>{try{document.body.removeChild(form);}catch(x){}showToast("Datos enviados a Google Sheets");},2000);
+  }catch(e){console.warn("Webhook:",e);}
+}
+
+/* ═══ RECORDS ═══ */
+function renderRecords(){
+  const el=document.getElementById("recList");if(!el)return;
+  const now=new Date(),pad=v=>String(v).padStart(2,"0");
+  const hoy=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  const recs=SAVED.filter(r=>r.fecha===hoy&&r.puntoIdx===USER.idx);
+  if(!recs.length){el.innerHTML='<p style="color:var(--text3);font-size:13px;">Ningún inventario guardado aún hoy.</p>';return;}
+  el.innerHTML=recs.map(r=>`<div class="rec-card">
+    <div style="display:flex;align-items:center;gap:9px;">
+      <div class="rec-dot"></div>
+      <div><div class="rec-name">${r.punto}</div><div class="rec-meta">📅 ${r.fecha} · Solicitud: ${r.totalSol} uds</div></div>
+    </div>
+    <span class="rec-time">🕐 ${r.hora}</span>
+  </div>`).join("");
+}
+
+/* ═══ CONSOLIDADO ═══ */
+function renderConsolidado(){
+  const now=new Date(),pad=v=>String(v).padStart(2,"0");
+  const fecha=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  const hoyRec=SAVED.filter(r=>r.fecha===fecha);
+  const total=CFG.puntos.length,guard=hoyRec.length,allSaved=guard>=total;
+
+  const prod=PRODS.map((p,pi)=>{
+    const solPP=CFG.puntos.map(pt=>{const r=hoyRec.find(x=>x.punto===pt.name);return r?r.filas[pi].solicitud:null;});
+    return{...p,solPP,totalSol:solPP.reduce((a,b)=>a+(b||0),0)};
+  });
+  const totalProd=prod.reduce((a,b)=>a+b.totalSol,0);
+  const itemsReq=prod.filter(p=>p.totalSol>0).length;
+
+  const waMsg=buildWaMsg(prod,fecha);
+  const wa1Link=CFG.wa1?`<a href="https://wa.me/${CFG.wa1}?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-green" style="text-decoration:none">📲 WA 1</a>`:"";
+  const wa2Link=CFG.wa2?`<a href="https://wa.me/${CFG.wa2}?text=${encodeURIComponent(waMsg)}" target="_blank" class="btn btn-green" style="text-decoration:none">📲 WA 2</a>`:"";
+  const noWa=!CFG.wa1&&!CFG.wa2?`<span style="font-size:12px;color:var(--text3);">Configura los números en el panel admin</span>`:"";
+
+  document.getElementById("panelContent").innerHTML=`
+<div class="sec-head">
+  <div><div class="sec-title">Consolidado de Producción</div><div class="sec-sub">Solicitudes sumadas · ${fecha}</div></div>
+  <span class="badge ${allSaved?"badge-green":"badge-amber"}">${allSaved?"✅ Completo":"⏳ "+guard+"/"+total+" puntos"}</span>
+</div>
+<div class="wa-box">
+  <div><div class="wa-title">📱 Enviar a planta</div><div class="wa-desc">${CFG.wa1?"Nro 1: "+CFG.wa1:"Sin número"} ${CFG.wa2?"· Nro 2: "+CFG.wa2:""}</div></div>
+  <div class="wa-actions">
+    <button class="btn btn-ghost" onclick="doExportConsolidado('${fecha}')">📥 CSV</button>
+    ${wa1Link}${wa2Link}${noWa}
+    <button class="btn btn-blue" onclick="copyMsg('${fecha}')">📋 Copiar</button>
+  </div>
+</div>
+<div class="consol-grid">
+  <div class="consol-stat"><div class="s-lbl">Puntos guardados</div><div class="s-val ${guard<total?"warn":""}">${guard}/${total}</div></div>
+  <div class="consol-stat"><div class="s-lbl">Items a producir</div><div class="s-val ${itemsReq>0?"warn":""}">${itemsReq}</div></div>
+  <div class="consol-stat"><div class="s-lbl">Total unidades</div><div class="s-val ${totalProd>0?"warn":""}">${totalProd}</div></div>
+</div>
+<div class="card">
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>#</th><th>Producto</th>${CFG.puntos.map(pt=>`<th class="c">${pt.name}</th>`).join("")}<th class="c" style="color:var(--amber)">PRODUCCIÓN</th></tr></thead>
+    <tbody>${prod.map(p=>`<tr>
+      <td class="c-code">${p.id}</td><td class="c-name">${p.n}</td>
+      ${p.solPP.map(v=>`<td class="c-num">${v===null?'<span style="color:var(--border2)">—</span>':(v===0?'<span style="color:var(--green)">✓</span>':v)}</td>`).join("")}
+      <td class="c-prod ${p.totalSol===0?"zero":"hi"}">${p.totalSol===0?"—":p.totalSol}</td>
+    </tr>`).join("")}</tbody>
+  </table></div>
+</div>`;
+}
+
+function buildWaMsg(prod,fecha){
+  const now=new Date(),pad=v=>String(v).padStart(2,"0");
+  const hora=`${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const items=prod.filter(p=>p.totalSol>0);
+  const pts=CFG.puntos.map(p=>p.name).join(" · ");
+  let msg=`🍞 *EL OBRADOR — PRODUCCIÓN*\n📅 ${fecha.split("-").reverse().join("/")} 🕐 ${hora}\n\n`;
+  msg+=items.length?items.map(p=>`• ${p.n}: *${p.totalSol} uds*`).join("\n"):"_Sin solicitudes hoy._";
+  msg+=`\n\n✅ _${pts}_`;
+  return msg;
+}
+function copyMsg(fecha){
+  const hoyRec=SAVED.filter(r=>r.fecha===fecha);
+  const prod=PRODS.map((p,pi)=>{const s=CFG.puntos.reduce((a,pt)=>{const r=hoyRec.find(x=>x.punto===pt.name);return a+(r?r.filas[pi].solicitud:0);},0);return{...p,totalSol:s};});
+  const msg=buildWaMsg(prod,fecha);
+  navigator.clipboard.writeText(msg).then(()=>showToast("📋 Mensaje copiado")).catch(()=>prompt("Copia:",msg));
+}
+function doExportConsolidado(fecha){
+  const hoyRec=SAVED.filter(r=>r.fecha===fecha);
+  const hdr="Codigo,Producto,"+CFG.puntos.map(p=>p.name).join(",")+",PRODUCCION\n";
+  const rows=PRODS.map((p,pi)=>{
+    const cols=CFG.puntos.map(pt=>{const r=hoyRec.find(x=>x.punto===pt.name);return r?r.filas[pi].solicitud:0;});
+    return`${p.id},"${p.n}",${cols.join(",")},${cols.reduce((a,b)=>a+b,0)}`;
+  }).join("\n");
+  const blob=new Blob([hdr+rows],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=`consolidado_${fecha}.csv`;a.click();URL.revokeObjectURL(url);
+}
+
+/* ═══ STOCK REQUEST ═══ */
+function openStockReq(i){
+  STOCK_REQ_IDX=i;
+  const p=PRODS[i];
+  document.getElementById("mStockDesc").textContent=`${p.n} — Stock mínimo actual: ${p.s} unidades`;
+  document.getElementById("mStockNew").value="";
+  document.getElementById("mStockReason").value="";
+  openModal("modalStock");
+}
+function sendStockReq(){
+  const i=STOCK_REQ_IDX;if(i===null)return;
+  const p=PRODS[i],nuevo=parseInt(document.getElementById("mStockNew").value)||0;
+  const razon=document.getElementById("mStockReason").value.trim();
+  if(!nuevo||nuevo<=p.s){showToast(`⚠️ Debe ser mayor al actual (${p.s})`);return;}
+  const now=new Date(),pad=v=>String(v).padStart(2,"0");
+  const fecha=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  const hora=`${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const msg=`📈 *SOLICITUD AMPLIACIÓN DE STOCK*\n\n📍 Punto: *${USER.name}*\n📅 ${fecha} ${hora}\n\nProducto: *${p.n}* (código ${p.id})\nStock actual: ${p.s} uds\nStock solicitado: *${nuevo} uds*`+(razon?`\nMotivo: ${razon}`:"");
+  if(CFG.webhook){fetch(CFG.webhook,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({tipo:"solicitud_stock",punto:USER.name,producto:p.n,codigoProd:p.id,stockActual:p.s,stockSolicitado:nuevo,motivo:razon,fecha,hora})}).catch(()=>{});}
+  if(CFG.wa1)window.open(`https://wa.me/${CFG.wa1}?text=${encodeURIComponent(msg)}`,"_blank");
+  else{navigator.clipboard.writeText(msg).catch(()=>{});showToast("📋 Solicitud copiada");}
+  closeModal("modalStock");showToast("📈 Solicitud enviada");
+}
+
+/* ═══ ADMIN ═══ */
+function renderAdmin(){
+  document.getElementById("cfgSheetId").value=CFG.sheetId||"";
+  document.getElementById("cfgWebhook").value=CFG.webhook||"";
+  document.getElementById("cfgWa1").value=CFG.wa1||"";
+  document.getElementById("cfgWa2").value=CFG.wa2||"";
+  const box=document.getElementById("sheetsBox");
+  if(CFG.sheetId){box.className="sheets-box on";box.innerHTML=`<div style="font-size:22px">✅</div><div><div class="st-title">Configurado</div><div class="st-desc">ID: ${CFG.sheetId.slice(0,24)}...</div></div>`;}
+  document.getElementById("puntosAdmin").innerHTML=CFG.puntos.map((p,i)=>`
+    <div class="punto-row">
+      <div><div class="p-name">${p.name}</div><div class="p-meta">Clave: ${p.pass} &nbsp;·&nbsp; ${p.rotation?'<span class="st-ok">✅ Con rotación</span>':'<span class="st-warn">⛔ Sin rotación</span>'}</div></div>
+      <div class="p-actions">
+        <button class="btn btn-ghost" onclick="editPunto(${i})">✏️</button>
+        ${CFG.puntos.length>1?`<button class="btn btn-red" onclick="delPunto(${i})">🗑</button>`:""}
+      </div>
+    </div>`).join("");
+}
+function saveSheetCfg(){CFG.sheetId=document.getElementById("cfgSheetId").value.trim();CFG.webhook=document.getElementById("cfgWebhook").value.trim();saveCfg();renderAdmin();showToast("✅ Configuración guardada");}
+function saveWaCfg(){CFG.wa1=document.getElementById("cfgWa1").value.replace(/\D/g,"");CFG.wa2=document.getElementById("cfgWa2").value.replace(/\D/g,"");saveCfg();showToast("✅ Números guardados");}
+function saveAdminPass(){const np=document.getElementById("cfgAdminPass").value.trim();if(np.length<4){showToast("⚠️ Mínimo 4 caracteres");return;}CFG.adminPass=np;saveCfg();showToast("✅ Clave actualizada");}
+function addPunto(){
+  const name=document.getElementById("nPuntoName").value.trim(),pass=document.getElementById("nPuntoPass").value.trim(),rot=document.getElementById("nPuntoRot").value==="1";
+  if(!name||!pass){showToast("⚠️ Nombre y contraseña requeridos");return;}
+  CFG.puntos.push({name,pass,rotation:rot});saveCfg();renderAdmin();closeModal("modalAddPunto");showToast(`✅ Punto "${name}" agregado`);
+}
+function delPunto(i){if(!confirm(`¿Eliminar "${CFG.puntos[i].name}"?`))return;CFG.puntos.splice(i,1);saveCfg();renderAdmin();showToast("🗑 Punto eliminado");}
+function editPunto(i){
+  const p=CFG.puntos[i];
+  const name=prompt("Nombre:",p.name);if(!name)return;
+  const pass=prompt("Contraseña:",p.pass);if(!pass)return;
+  CFG.puntos[i]={...p,name,pass};saveCfg();renderAdmin();showToast("✅ Punto actualizado");
+}
+
+/* ═══ MODAL ═══ */
+function openModal(id){document.getElementById(id).classList.add("open");}
+function closeModal(id){document.getElementById(id).classList.remove("open");}
+document.querySelectorAll(".modal-overlay").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("open");}));
+
+/* ═══ TOAST ═══ */
+let TT;
+function showToast(msg){const t=document.getElementById("toast");document.getElementById("toastMsg").textContent=msg;t.classList.add("show");clearTimeout(TT);TT=setTimeout(()=>t.classList.remove("show"),3500);}
+
+/* ═══ INIT ═══ */
+populateLoginSelect();
+</script>
+</body>
+</html>
