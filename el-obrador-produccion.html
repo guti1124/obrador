@@ -776,10 +776,20 @@ function exportCSV(reg){
 
 async function sendWebhook(reg){
   if(!CFG.webhook)return;
-  try{await fetch(CFG.webhook,{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({punto:reg.punto,fecha:reg.fecha,hora:reg.hora,totalSolicitud:reg.totalSol,
-      filas:reg.filas.map(f=>({codigo:f.id,producto:f.n,stockMinimo:f.s,cantidad:f.cantidad,solicitud:f.solicitud}))})});}
-  catch(e){console.warn("Webhook:",e);}
+  try{
+    const payload={
+      punto:reg.punto,fecha:reg.fecha,hora:reg.hora,totalSolicitud:reg.totalSol,
+      filas:reg.filas.map(f=>({codigo:f.id,producto:f.n,stockMinimo:f.s,cantidad:f.cantidad,solicitud:f.solicitud}))
+    };
+    let iframe=document.getElementById("webhookFrame");
+    if(!iframe){iframe=document.createElement("iframe");iframe.id="webhookFrame";iframe.name="webhookFrame";iframe.style.display="none";document.body.appendChild(iframe);}
+    const form=document.createElement("form");
+    form.method="POST";form.action=CFG.webhook;form.target="webhookFrame";form.style.display="none";
+    const input=document.createElement("input");
+    input.type="hidden";input.name="data";input.value=JSON.stringify(payload);
+    form.appendChild(input);document.body.appendChild(form);form.submit();
+    setTimeout(()=>{try{document.body.removeChild(form);}catch(x){}showToast("☁️ Datos enviados a Google Sheets");},1500);
+  }catch(e){console.warn("Webhook:",e);}
 }
 
 /* ═══ RECORDS ═══ */
@@ -944,5 +954,9 @@ function showToast(msg){const t=document.getElementById("toast");document.getEle
 /* ═══ INIT ═══ */
 populateLoginSelect();
 </script>
+</body>
+</html>
+
+  
 </body>
 </html>
